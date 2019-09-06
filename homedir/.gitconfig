@@ -1,0 +1,34 @@
+[user]
+  name = Kylian Vermeulen
+  email = kylian@kylianvermeulen.nl
+  signingKey = BB7A39CC49ED38878E2FE0D4E44861F2BCBED572
+  username = KylianVermeulen
+[github]
+  user = KylianVermeulen
+[core]
+  excludesfile = ~/.gitignore
+  quotepath = false
+  autocrlf = input
+  safecrlf = warn
+  editor = vim
+[commit]
+  gpgsign = true  
+[tag]
+  forceSignAnnotated = true
+[alias]
+  co = checkout
+  br = branch -a
+  s = status -s -u
+  c = commit
+  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+  lg-ascii = log --graph --pretty=format:'%h -%d %s (%cr) <%an>' --abbrev-commit
+  lg-simple = log --graph --abbrev-commit --pretty=oneline --all --decorate
+[rerere]
+  # Enable the recording of resolved conflicts, so that identical hunks can be resolved automatically later on
+  enabled = 1
+[diff]
+  tool = vimdiff
+[merge]
+  tool = vimdiff
+  stat = true
+  conflictstyle = diff3

@@ -32,3 +32,5 @@
   tool = vimdiff
   stat = true
   conflictstyle = diff3
+[gpg]
+  program = gpg2

@@ -107,3 +107,14 @@ export LANG=en_US.UTF-8
 
 # The next line enables shell command completion for gcloud.
 # if [ -f '/Users/kylianvermeulen/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/kylianvermeulen/google-cloud-sdk/completion.zsh.inc'; fi
+
+source /usr/local/opt/nvm/nvm.sh --no-use
+
+autoload -U add-zsh-hook
+load-nvmrc() {
+  if [[ -f .nvmrc && -r .nvmrc ]]; then
+    nvm use &> /dev/null
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc

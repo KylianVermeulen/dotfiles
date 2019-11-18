@@ -37,7 +37,8 @@ module.exports = {
     'google-cloud-sdk',
     'dockey',
     'bootstrap-studio',
-    'xquartz'
+    'xquartz',
+    'the-unarchiver'
   ],
   gem: [
   ],

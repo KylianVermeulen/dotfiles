@@ -160,9 +160,9 @@ bot "Installing packages from config.js..."
 node index.js
 ok
 
-bot "Installing pyenv 3.7.4 global"
-pyenv install 3.7.4
-pyenv global 3.7.4
+# bot "Installing pyenv 3.7.4 global"
+# pyenv install 3.7.4
+# pyenv global 3.7.4
 
 running "Cleanup homebrew"
 brew cleanup --force > /dev/null 2>&1

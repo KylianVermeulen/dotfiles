@@ -24,10 +24,11 @@ module.exports = {
     'ruby',
     'go',
     'python',
-    'pyenv',
-    'pyenv-virtualenv',
+    // 'pyenv',
+    // 'pyenv-virtualenv',
     'openssl',
-    'composer'
+    'composer',
+    "nano"
   ],
   cask: [
     'docker',

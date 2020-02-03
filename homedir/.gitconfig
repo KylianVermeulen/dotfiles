@@ -1,12 +1,12 @@
 [user]
   name = Kylian Vermeulen
-  email = personal@kylianvermeulen.com
-  signingKey = 3645B45C5E515AFE
+  email = email@kylianvermeulen.com
+  signingKey = 176C69A3FD5DC4D3
   username = KylianVermeulen
 [github]
   user = KylianVermeulen
 [core]
-  excludesfile = ~/.gitignore
+  excludesfile = /Users/kylianvermeulen/.gitignore
   quotepath = false
   autocrlf = input
   safecrlf = warn
@@ -34,3 +34,9 @@
   conflictstyle = diff3
 [gpg]
   program = gpg2
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true

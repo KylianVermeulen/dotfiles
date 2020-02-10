@@ -1,18 +1,19 @@
 [user]
-  name = Kylian Vermeulen
-  email = email@kylianvermeulen.com
+	name = Kylian Vermeulen
+	email = email@kylianvermeulen.com
   signingKey = 176C69A3FD5DC4D3
   username = KylianVermeulen
 [github]
   user = KylianVermeulen
 [core]
-  excludesfile = /Users/kylianvermeulen/.gitignore
+	excludesfile = /Users/kylianvermeulen/.gitignore
   quotepath = false
   autocrlf = input
   safecrlf = warn
   editor = vim
 [commit]
   gpgsign = true  
+	template = /Users/kylianvermeulen/.stCommitMsg
 [tag]
   forceSignAnnotated = true
 [alias]

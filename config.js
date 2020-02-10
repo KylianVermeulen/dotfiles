@@ -6,7 +6,6 @@ module.exports = {
     'findutils',
     'readline',
     'gawk',
-    'gnupg',
     'gnu-sed --with-default-names',
     'grep --with-default-names',
     'homebrew/dupes/grep',

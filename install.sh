@@ -34,6 +34,22 @@ if [ $? -ne 0 ]; then
 fi
 
 # ###########################################################
+# /etc/hosts -- spyware/ad blocking
+# ###########################################################
+read -r -p "Overwrite /etc/hosts with the ad-blocking hosts file from someonewhocares.org? (from ./configs/hosts file) [y|N] " response
+if [[ $response =~ (yes|y|Y) ]];then
+    action "cp /etc/hosts /etc/hosts.backup"
+    sudo cp /etc/hosts /etc/hosts.backup
+    ok
+    action "cp ./configs/hosts /etc/hosts"
+    sudo cp ./configs/hosts /etc/hosts
+    ok
+    bot "Your /etc/hosts file has been updated. Last version is saved in /etc/hosts.backup"
+else
+    ok "skipped";
+fi
+
+# ###########################################################
 # Install non-brew various tools (PRE-BREW Installs)
 # ###########################################################
 bot "ensuring build/install tools are available"
@@ -160,28 +176,7 @@ bot "Installing packages from config.js..."
 node index.js
 ok
 
-# bot "Installing pyenv 3.7.4 global"
-# pyenv install 3.7.4
-# pyenv global 3.7.4
-
 running "Cleanup homebrew"
 brew cleanup --force > /dev/null 2>&1
 rm -f -r /Library/Caches/Homebrew/* > /dev/null 2>&1
-ok
-
-bot "OS Configuration"
-read -r -p "Do you want to update the system configurations? [y|N] " response
-if [[ -z $response || $response =~ ^(n|N) ]]; then
-  open /Applications/iTerm.app
-  bot "All done"
-  exit
-fi
-
-###############################################################################
-bot "Configuring General System UI/UX..."
-###############################################################################
-# Close any open System Preferences panes, to prevent them from overriding
-# settings we’re about to change
-running "Closing any system preferences to prevent issues with automated changes"
-osascript -e 'tell application "System Preferences" to quit'
 ok

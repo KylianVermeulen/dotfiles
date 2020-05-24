@@ -10,6 +10,7 @@ module.exports = {
     'grep --with-default-names',
     'homebrew/dupes/grep',
     'httpie',
+    'jq',
     'mas',
     'moreutils',
     'nmap',
@@ -20,28 +21,28 @@ module.exports = {
     'wget --enable-iri',
     'curl',
     'mysql',
-    'ruby',
     'go',
     'python',
-    // 'pyenv',
-    // 'pyenv-virtualenv',
     'openssl',
-    'composer',
-    "nano"
+    'nano',
+    'htop'
   ],
   cask: [
     'docker',
     'gpg-suite',
     'iterm2',
     'visual-studio-code',
-    'google-cloud-sdk',
     'dockey',
     'bootstrap-studio',
     'xquartz',
-    'the-unarchiver'
+    'the-unarchiver',
+    'sourcetree'
   ],
   gem: [
   ],
   npm: [
+  ],
+  mas: [
+    '937984704'
   ]
 };

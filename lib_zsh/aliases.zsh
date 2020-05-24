@@ -16,3 +16,5 @@ alias g=git
 alias update='sudo softwareupdate -i -a; brew update; brew upgrade; brew cleanup; mas upgrade; npm install npm -g; npm update -g; sudo gem update --system; sudo gem update; sudo gem cleanup'
 
 alias lookbusy="cat /dev/urandom | hexdump -C | grep \"34 32\""
+
+alias 10gb="osascript sendMessage.applescript"

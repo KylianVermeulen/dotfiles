@@ -18,3 +18,10 @@ alias update='sudo softwareupdate -i -a; brew update; brew upgrade; brew cleanup
 alias lookbusy="cat /dev/urandom | hexdump -C | grep \"34 32\""
 
 alias 10gb="osascript sendMessage.applescript"
+
+export JAVA_14_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.2.jdk/Contents/Home
+export JAVA_13_HOME=/Library/Java/JavaVirtualMachines/jdk-13.0.2.jdk/Contents/Home
+export JAVA_15_HOME=/Library/Java/JavaVirtualMachines/jdk-15.jdk/Contents/Home
+alias java13='export JAVA_HOME=$JAVA_13_HOME'
+alias java14='export JAVA_HOME=$JAVA_14_HOME'
+alias java15='export JAVA_HOME=$JAVA_15_HOME'

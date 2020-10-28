@@ -6,6 +6,7 @@ module.exports = {
     'findutils',
     'readline',
     'gawk',
+    'gnupg',
     'gnu-sed --with-default-names',
     'grep --with-default-names',
     'homebrew/dupes/grep',
@@ -21,8 +22,6 @@ module.exports = {
     'wget --enable-iri',
     'curl',
     'mysql',
-    'go',
-    'python',
     'openssl',
     'nano',
     'htop'
@@ -36,7 +35,8 @@ module.exports = {
     'bootstrap-studio',
     'xquartz',
     'the-unarchiver',
-    'sourcetree'
+    'sourcetree',
+    'slack'
   ],
   gem: [
   ],

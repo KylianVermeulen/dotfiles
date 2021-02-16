@@ -1,13 +1,13 @@
 #Brew
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
+#export PATH=/usr/local/opt/nvm/versions/node/v13.1.0/lib/node_modules:$PATH
 
 #GPG
 export GPG_TTY=$(tty)
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/$(whoami)/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/$(whoami)/google-cloud-sdk/path.zsh.inc'; fi
-
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/$(whoami)/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/$(whoami)/google-cloud-sdk/completion.zsh.inc'; fi
 
@@ -30,6 +30,4 @@ fi
 unset __conda_setup
 # <<< conda init <<<
 
-export PYTHON_DATABASE_URI='sqlite:///mastermind.db'
-
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.2.jdk/Contents/Home
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-15.jdk/Contents/Home

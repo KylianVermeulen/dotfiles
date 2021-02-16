@@ -71,7 +71,7 @@ ZSH_CUSTOM=$DOTFILES/lib_zsh/
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git jira docker docker-compose osx nvm)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -102,13 +102,17 @@ export LANG=en_US.UTF-8
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# The next line updates PATH for the Google Cloud SDK.
-# if [ -f '/Users/kylianvermeulen/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/kylianvermeulen/google-cloud-sdk/path.zsh.inc'; fi
+lazynvm() {
+  unset -f nvm
+  export NVM_DIR="$HOME/.nvm"
+  source $(brew --prefix nvm)/nvm.sh
+  source $(brew --prefix nvm)/etc/bash_completion.d/nvm
+}
 
-# The next line enables shell command completion for gcloud.
-# if [ -f '/Users/kylianvermeulen/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/kylianvermeulen/google-cloud-sdk/completion.zsh.inc'; fi
-
-source /usr/local/opt/nvm/nvm.sh --no-use
+nvm() {
+  lazynvm 
+  nvm $@
+}
 
 autoload -U add-zsh-hook
 load-nvmrc() {
@@ -118,8 +122,7 @@ load-nvmrc() {
 }
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/kylianvermeulen/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/kylianvermeulen/google-cloud-sdk/path.zsh.inc'; fi
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/kylianvermeulen/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/kylianvermeulen/google-cloud-sdk/completion.zsh.inc'; fi
+#export NVM_DIR="$HOME/.nvm"
+#source $(brew --prefix nvm)/nvm.sh
+#source $(brew --prefix nvm)/etc/bash_completion.d/nvm

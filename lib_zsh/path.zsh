@@ -1,7 +1,8 @@
 #Brew
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
-#export PATH=/usr/local/opt/nvm/versions/node/v13.1.0/lib/node_modules:$PATH
+#export PATH=/usr/local/opt/nvm/versions/node/v16.14.0/lib/node_modules:$PATH
+export PATH=/Users/$(whoami)/google-cloud-sdk/bin/:$PATH
 
 #GPG
 export GPG_TTY=$(tty)
@@ -31,3 +32,5 @@ unset __conda_setup
 # <<< conda init <<<
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-15.jdk/Contents/Home
+
+export EDITOR=vim

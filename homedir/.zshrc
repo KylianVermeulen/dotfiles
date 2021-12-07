@@ -139,8 +139,3 @@ load-nvmrc
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-export DARK_SKY_KEY=""
-export OPENWEATHERMAP_KEY=""
-export SPOTIFY_CLIENT="29b00bacfc414ee3a7cf011ba02ef43d"
-export SPOTIFY_SECRET="aa51e571cb0b4c5490c04a3829a5bbc4"
-

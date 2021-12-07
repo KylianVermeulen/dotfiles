@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Path to dotfiles.
 export DOTFILES=$HOME/dotfiles
 
@@ -11,7 +18,8 @@ export ZSH="/Users/kylianvermeulen/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -102,11 +110,12 @@ export LANG=en_US.UTF-8
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+
 lazynvm() {
   unset -f nvm
   export NVM_DIR="$HOME/.nvm"
-  source $(brew --prefix nvm)/nvm.sh
-  source $(brew --prefix nvm)/etc/bash_completion.d/nvm
+  source $(brew --prefix nvm)/nvm.sh --no-use
+  source $(brew --prefix nvm)/etc/bash_completion.d/nvm --no-use
 }
 
 nvm() {
@@ -126,3 +135,12 @@ load-nvmrc
 #export NVM_DIR="$HOME/.nvm"
 #source $(brew --prefix nvm)/nvm.sh
 #source $(brew --prefix nvm)/etc/bash_completion.d/nvm
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+export DARK_SKY_KEY=""
+export OPENWEATHERMAP_KEY=""
+export SPOTIFY_CLIENT="29b00bacfc414ee3a7cf011ba02ef43d"
+export SPOTIFY_SECRET="aa51e571cb0b4c5490c04a3829a5bbc4"
+

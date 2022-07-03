@@ -24,7 +24,7 @@
   "homepage": "https://github.com/kylianvermeulen/dotfiles#readme",
   "dependencies": {
     "async.series": "0.5.2",
-    "inquirer": "6.2.2",
-    "node-emoji": "1.10.0"
+    "inquirer": "9.0.0",
+    "node-emoji": "1.11.0"
   }
 }

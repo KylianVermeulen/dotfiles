@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -n "$1" ]; then
+  netstat -vanp tcp | grep $1
+else
+  echo "Port not supplied."
+fi

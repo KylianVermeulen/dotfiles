@@ -17,6 +17,7 @@ alias dc=docker-compose
 alias update='sudo softwareupdate -i -a; brew update; brew upgrade; brew cleanup; mas upgrade; npm install npm -g; npm update -g; sudo gem update --system; sudo gem update; sudo gem cleanup'
 
 alias lookbusy="cat /dev/urandom | hexdump -C | grep \"34 32\""
+alias random="od -d /dev/urandom"
 
 alias 10gb="osascript sendMessage.applescript"
 
@@ -38,4 +39,3 @@ alias tx=tmuxinator
 alias pe='cd ~/Documents/Code/project-everyware'
 
 alias pub_idrsa='cat ~/.ssh/id_rsa.pub | pbcopy'
-

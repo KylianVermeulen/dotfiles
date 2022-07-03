@@ -4,6 +4,8 @@ export PATH=/usr/local/bin:$PATH
 #export PATH=/usr/local/opt/nvm/versions/node/v16.14.0/lib/node_modules:$PATH
 export PATH=/Users/$(whoami)/google-cloud-sdk/bin/:$PATH
 
+export PATH=/Users/kylianvermeulen/dotfiles/lib_func:$PATH
+
 #GPG
 export GPG_TTY=$(tty)
 

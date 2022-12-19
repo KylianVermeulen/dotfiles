@@ -33,6 +33,9 @@ fi
 unset __conda_setup
 # <<< conda init <<<
 
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-11.0.12.jdk/Contents/Home
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home
 
 export EDITOR=vim
+
+export PATH=/etc/flutter/bin:$PATH
+

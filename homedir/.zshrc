@@ -158,3 +158,5 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+
+complete -o nospace -C /opt/homebrew/bin/terraform terraform

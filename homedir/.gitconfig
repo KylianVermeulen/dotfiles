@@ -45,3 +45,5 @@
 	trustExitCode = true
 [init]
 	defaultBranch = master
+[maintenance]
+	repo = /Users/kylianvermeulen/Documents/Code/Jobdigger/customerfrontend2

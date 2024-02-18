@@ -6,6 +6,10 @@ export PATH=/Users/$(whoami)/google-cloud-sdk/bin/:$PATH
 
 export PATH=/Users/kylianvermeulen/dotfiles/lib_func:$PATH
 
+#export PATH=/usr/local/share/dotnet/:$PATH
+export PATH="/usr/local/share/dotnet:$PATH"
+export DOTNET_ROOT="/opt/homebrew/opt/dotnet/libexec"
+
 #GPG
 export GPG_TTY=$(tty)
 

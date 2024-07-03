@@ -1,10 +1,3 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Path to dotfiles.
 export DOTFILES=$HOME/dotfiles
 
@@ -19,7 +12,6 @@ export ZSH="/Users/kylianvermeulen/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 ZSH_THEME="robbyrussell"
-#ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -79,7 +71,7 @@ ZSH_CUSTOM=$DOTFILES/lib_zsh/
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git jira docker docker-compose macos nvm tmux)
+plugins=(git jira docker docker-compose macos nvm tmux zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -110,53 +102,7 @@ export LANG=en_US.UTF-8
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-
-lazynvm() {
-  unset -f nvm
-  export NVM_DIR="$HOME/.nvm"
-  source $(brew --prefix nvm)/nvm.sh --no-use
-  source $(brew --prefix nvm)/etc/bash_completion.d/nvm --no-use
-}
-
-nvm() {
-  lazynvm 
-  nvm $@
-}
-
-autoload -U add-zsh-hook
-load-nvmrc() {
-  if [[ -f .nvmrc && -r .nvmrc ]]; then
-    nvm use &> /dev/null
-  fi
-}
-add-zsh-hook chpwd load-nvmrc
-load-nvmrc
-
-#export NVM_DIR="$HOME/.nvm"
-#source $(brew --prefix nvm)/nvm.sh
-#source $(brew --prefix nvm)/etc/bash_completion.d/nvm
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-#[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/terraform terraform
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/kylianvermeulen/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/Users/kylianvermeulen/opt/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/kylianvermeulen/opt/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/kylianvermeulen/opt/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-
-complete -o nospace -C /opt/homebrew/bin/terraform terraform
+if [ -f "/Users/kylianvermeulen/.config/fabric/fabric-bootstrap.inc" ]; then . "/Users/kylianvermeulen/.config/fabric/fabric-bootstrap.inc"; fi
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

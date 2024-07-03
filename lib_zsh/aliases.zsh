@@ -21,29 +21,7 @@ alias install_rosetta='sudo softwareupdate --install-rosetta --agree-to-license'
 alias lookbusy="cat /dev/urandom | hexdump -C | grep \"34 32\""
 alias random="od -d /dev/urandom"
 
-alias 10gb="osascript sendMessage.applescript"
-
-export JAVA_11_HOME=/Library/Java/JavaVirtualMachines/jdk-11.0.12.jdk/Contents/Home
-export JAVA_11_HOHE_AWS=/Library/Java/JavaVirtualMachines/amazon-corretto-11.jdk/Contents/Home
-export JAVA_17_HOME_AWS=/Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home
-export JAVA_14_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.2.jdk/Contents/Home
-export JAVA_13_HOME=/Library/Java/JavaVirtualMachines/jdk-13.0.2.jdk/Contents/Home
-export JAVA_15_HOME=/Library/Java/JavaVirtualMachines/jdk-15.jdk/Contents/Home
-export GRAAL_11_HOME=/Library/Java/JavaVirtualMachines/graalvm-ce-java11-22.0.0.2/Contents/Home
-export GRAAL_17_HOME=/Library/Java/JavaVirtualMachines/graalvm-ce-java17-22.3.1/Contents/Home
-alias java11='export JAVA_HOME=$JAVA_11_HOME'
-alias java11aws='export JAVA_HOME=$JAVA_11_HOME_AWS'
-alias java17aws='export JAVA_HOME=$JAVA-17_HOME_AWS'
-alias java13='export JAVA_HOME=$JAVA_13_HOME'
-alias java14='export JAVA_HOME=$JAVA_14_HOME'
-alias java15='export JAVA_HOME=$JAVA_15_HOME'
-alias graal11='export JAVA_HOME=$GRAAL_11_HOME'
-alias graal17='export JAVA_HOME=$GRAAL_17_HOME'
-
 alias tx=tmuxinator
-
 alias pe='cd ~/Documents/Code/project-everyware'
-
 alias pub_idrsa='cat ~/.ssh/id_rsa.pub | pbcopy'
-
 alias sail='./vendor/bin/sail'

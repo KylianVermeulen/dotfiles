@@ -42,3 +42,7 @@ Thumbs.db
 .idea/
 .vscode
 .vagrant/
+
+# Kylian #
+logback-kylian.xml
+application-kylian.yml

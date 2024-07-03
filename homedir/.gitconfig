@@ -1,19 +1,19 @@
 [user]
-	name = Kylian Vermeulen
-	email = email@kylianvermeulen.com
+  name = Kylian Vermeulen
+  email = email@kylianvermeulen.com
   signingKey = 176C69A3FD5DC4D3
   username = KylianVermeulen
 [github]
   user = KylianVermeulen
 [core]
-	excludesfile = /Users/kylianvermeulen/.gitignore
+  excludesfile = /Users/kylianvermeulen/.gitignore
   quotepath = false
   autocrlf = input
   safecrlf = warn
   editor = vim
 [commit]
   gpgsign = true  
-	template = /Users/kylianvermeulen/.stCommitMsg
+  template = /Users/kylianvermeulen/.stCommitMsg
 [tag]
   forceSignAnnotated = true
 [alias]
@@ -34,16 +34,20 @@
   stat = true
   conflictstyle = diff3
 [gpg]
-  program = gpg2
+  program = /usr/local/MacGPG2/bin/gpg2
 [pager]
-	log = true
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-[mergetool "sourcetree"]
-	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
+  log = true
 [init]
-	defaultBranch = master
+  defaultBranch = master
 [maintenance]
-	repo = /Users/kylianvermeulen/Documents/Code/Jobdigger/customerfrontend2
+  repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.Feature.Vens.Api
+  repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.Feature.Vens
+  repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.TeamService
+  repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.Templates.Infrastructure
+  repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.Team.Thor
+  repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.MobielPlatform
+  repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.App.Wissel
+  repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.Atlas.Pipelines
+  repo = /Users/kylianvermeulen/Documents/Code/NS/IMKInterfaces
+[includeIf "gitdir:~/Documents/Code/NS/"]
+  path = .gitconfig-ns

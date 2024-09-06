@@ -5,9 +5,9 @@ export PATH=/Users/kylianvermeulen/dotfiles/lib_func:$PATH
 export PATH="/usr/local/share/dotnet:$PATH"
 export PATH=$PATH:$HOME/dotnet
 export PATH=$PATH:/Users/kylianvermeulen/.local/bin
-
-#GPG
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH:
 export GPG_TTY=$(tty)
-
 export EDITOR=vim
 export DOTNET_ROOT=$HOME/dotnet

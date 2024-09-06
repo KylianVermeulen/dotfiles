@@ -11,7 +11,7 @@ alias dnsflush='dscacheutil -flushcache'
 
 # Simple Program Name Shortening
 alias g=git
-alias dc=docker-compose
+alias dc=docker compose
 alias pn=pnpm
 
 # Get macOS Software Updates, and update installed Ruby gems, Homebrew, npm, and their installed packages
@@ -22,6 +22,5 @@ alias lookbusy="cat /dev/urandom | hexdump -C | grep \"34 32\""
 alias random="od -d /dev/urandom"
 
 alias tx=tmuxinator
-alias pe='cd ~/Documents/Code/project-everyware'
 alias pub_idrsa='cat ~/.ssh/id_rsa.pub | pbcopy'
 alias sail='./vendor/bin/sail'

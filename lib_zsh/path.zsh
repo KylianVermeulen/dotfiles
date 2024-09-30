@@ -5,9 +5,15 @@ export PATH=/Users/kylianvermeulen/dotfiles/lib_func:$PATH
 export PATH="/usr/local/share/dotnet:$PATH"
 export PATH=$PATH:$HOME/dotnet
 export PATH=$PATH:/Users/kylianvermeulen/.local/bin
-export GOROOT=/usr/local/go
+
 export GOPATH=$HOME/go
-export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH:
+export GOBIN=$GOPATH/bin
+export GOROOT="$(brew --prefix golang)/libexec"
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
+
 export GPG_TTY=$(tty)
 export EDITOR=vim
 export DOTNET_ROOT=$HOME/dotnet
+
+export PATH=$PATH:/Users/kylianvermeulen/.composer/vendor/bin

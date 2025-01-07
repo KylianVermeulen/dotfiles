@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# Check if ffmpeg is installed
+if ! command -v ffmpeg &> /dev/null; then
+    echo "Error: ffmpeg is not installed"
+    echo "Please install it first using your package manager"
+    echo "For example: sudo apt install ffmpeg"
+    exit 1
+fi
+
+# Function to display usage
+show_usage() {
+    echo "Usage: $0 [-h] [-b] [-l language] video_file subtitle_file output_file"
+    echo
+    echo "Options:"
+    echo "  -h    Show this help message"
+    echo "  -b    Burn subtitles into video (hardcode them)"
+    echo "  -l    Set subtitle language (default: eng)"
+    echo
+    echo "Arguments:"
+    echo "  video_file     Input video file (MP4 format)"
+    echo "  subtitle_file  Input subtitle file (VTT format)"
+    echo "  output_file    Output video file (MP4 format)"
+    exit 1
+}
+
+# Initialize variables
+BURN_SUBTITLES=false
+SUBTITLE_LANGUAGE="eng"
+
+# Parse command line options
+while getopts "hbl:" opt; do
+    case $opt in
+        h)
+            show_usage
+            ;;
+        b)
+            BURN_SUBTITLES=true
+            ;;
+	l)
+	    SUBTITLE_LANGUAGE="$OPTARG"
+	    ;;
+        \?)
+            echo "Invalid option: -$OPTARG"
+            show_usage
+            ;;
+    esac
+done
+
+# Shift the options so $1 becomes the first non-option argument
+shift $((OPTIND-1))
+
+# Check if we have the correct number of arguments
+if [ $# -ne 3 ]; then
+    echo "Error: Missing required arguments"
+    show_usage
+fi
+
+VIDEO_FILE="$1"
+SUBTITLE_FILE="$2"
+OUTPUT_FILE="$3"
+
+# Check if input files exist
+if [ ! -f "$VIDEO_FILE" ]; then
+    echo "Error: Video file '$VIDEO_FILE' not found"
+    exit 1
+fi
+
+if [ ! -f "$SUBTITLE_FILE" ]; then
+    echo "Error: Subtitle file '$SUBTITLE_FILE' not found"
+    exit 1
+fi
+
+# Check file extensions
+if [[ ! "$VIDEO_FILE" =~ \.(mp4|MP4)$ ]]; then
+    echo "Warning: Input video file should be an MP4 file"
+fi
+
+if [[ ! "$SUBTITLE_FILE" =~ \.(vtt|VTT)$ ]]; then
+    echo "Warning: Input subtitle file should be a VTT file"
+fi
+
+if [[ ! "$OUTPUT_FILE" =~ \.(mp4|MP4)$ ]]; then
+    echo "Warning: Output file should have .mp4 extension"
+fi
+
+# Merge files based on selected method
+echo "Starting subtitle merge process..."
+
+if [ "$BURN_SUBTITLES" = true ]; then
+    echo "Burning subtitles into video..."
+    ffmpeg -i "$VIDEO_FILE" -vf "subtitles=$SUBTITLE_FILE" \
+        -c:a copy "$OUTPUT_FILE"
+else
+    echo "Adding subtitles as separate track..."
+    ffmpeg -i "$VIDEO_FILE" -i "$SUBTITLE_FILE" \
+        -c:v copy -c:a copy -c:s mov_text -metadata:s:s:0 language="$SUBTITLE_LANGUAGE" -disposition:s:0 default -tag:s:0 tx3g "$OUTPUT_FILE"
+fi
+
+# Check if ffmpeg command was successful
+if [ $? -eq 0 ]; then
+    echo "Success! Output saved as: $OUTPUT_FILE"
+else
+    echo "Error: Subtitle merge failed"
+    exit 1
+fi
+

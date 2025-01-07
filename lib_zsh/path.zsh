@@ -17,3 +17,7 @@ export EDITOR=vim
 export DOTNET_ROOT=$HOME/dotnet
 
 export PATH=$PATH:/Users/kylianvermeulen/.composer/vendor/bin
+export ANDROID_HOME=/Users/kylianvermeulen/Library/Android/sdk
+
+export JAVA_HOME=/Users/kylianvermeulen/Library/Java/JavaVirtualMachines/corretto-21.0.5/Contents/Home
+export PATH=$PATH:/Users/kylianvermeulen/Library/Java/JavaVirtualMachines/corretto-21.0.5/Contents/Home

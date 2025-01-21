@@ -21,7 +21,21 @@ convert_to_hevc() {
     echo "Converting: $input_file"
     echo "Output to: $output_file"
     
+    # Get video resolution
+    resolution=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$input_file")
+    width=$(echo $resolution | cut -d'x' -f1)
+    height=$(echo $resolution | cut -d'x' -f2)
+    
+    # Check if resolution exceeds 1080p and set scaling if needed
+    scale_filter=""
+    if [ $height -gt 1080 ]; then
+        scale_filter="-vf scale=-2:1080"
+        echo "Input resolution: ${width}x${height}"
+        echo "Scaling down to 1080p"
+    fi
+    
     ffmpeg -i "$input_file" \
+        $scale_filter \
         -c:v libx265 \
         -preset medium \
         -crf 28 \
@@ -39,6 +53,10 @@ convert_to_hevc() {
         new_size=$(du -h "$output_file" | cut -f1)
         echo "Original size: $original_size"
         echo "New size: $new_size"
+        
+        # Show final resolution
+        final_resolution=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$output_file")
+        echo "Final resolution: $final_resolution"
     else
         echo "Error converting $input_file"
         return 1
@@ -49,6 +67,7 @@ convert_to_hevc() {
 if [ $# -eq 0 ]; then
     echo "Usage: $0 video1.mp4 [video2.mp4 ...]"
     echo "This script converts videos to H.265/HEVC format for better compression."
+    echo "Videos larger than 1080p will be automatically scaled down."
     exit 1
 fi
 

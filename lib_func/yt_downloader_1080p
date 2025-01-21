@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Function to check if yt-dlp is installed
+check_yt_dlp() {
+    if ! command -v yt-dlp &> /dev/null; then
+        echo "yt-dlp is not installed. Please install it first."
+        echo "You can install it using: pip install yt-dlp"
+        exit 1
+    fi
+}
+
+# Function to download video
+download_video() {
+    local url="$1"
+    local output_dir="$2"
+    local cookies_file="$3"
+
+    if [ ! -d "$output_dir" ]; then
+        mkdir -p "$output_dir"
+    fi
+
+    # Construct the yt-dlp command with resolution limit between 1080p and 1080p
+    local cmd="yt-dlp -f 'bestvideo[height<=1080][height>=1080][ext=webm][vcodec^=vp9]+bestaudio[ext=webm]/bestvideo[height<=1080][height>=1080][ext=mp4][vcodec^=hev1]+bestaudio[ext=m4a]/bestvideo[height<=1080][height>=1080][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/best[height<=1080][height>=1080]/best'"
+    
+    # Add download options
+    cmd+=" --retries infinite"
+    cmd+=" --fragment-retries infinite"
+    
+    # Add cookies if provided
+    if [ -n "$cookies_file" ] && [ -f "$cookies_file" ]; then
+        cmd+=" --cookies '$cookies_file'"
+        echo "Using cookies from: $cookies_file"
+    else
+        echo "No cookies file provided or file not found. Proceeding without cookies."
+    fi
+
+    cmd+=" -o '$output_dir/%(title)s.%(ext)s'"
+    cmd+=" '$url'"
+
+    # Execute the command
+    eval "$cmd"
+}
+
+# Main script
+main() {
+    check_yt_dlp
+
+    read -p "Enter the video URL: " video_url
+    read -p "Enter the output directory (default: current directory): " output_dir
+    read -p "Enter path to cookies.txt file (optional, press enter to skip): " cookies_file
+
+    if [ -z "$output_dir" ]; then
+        output_dir="."
+    fi
+
+    download_video "$video_url" "$output_dir" "$cookies_file"
+}
+
+# Run the main function
+main

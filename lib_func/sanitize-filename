@@ -1,0 +1,49 @@
+#!/bin/bash
+
+sanitize_filename() {
+    local filepath="$1"
+    local date_prefix=$(date +%Y%m%d)
+    
+    # Split into directory and filename
+    local directory=$(dirname "$filepath")
+    local filename=$(basename "$filepath")
+    
+    # Extract the file extension
+    local extension="${filename##*.}"
+    local basename="${filename%.*}"
+    
+    # Remove special characters and replace spaces with hyphens
+    # 1. Replace multiple spaces with single space
+    # 2. Replace parentheses, colons, and other special chars with hyphens
+    # 3. Remove any non-alphanumeric chars except $, spaces, and hyphens
+    # 4. Replace multiple hyphens with single hyphen
+    local sanitized=$(echo "$basename" | \
+        sed 's/  */ /g' | \
+        sed 's/[():：]/-/g' | \
+        sed 's/[^a-zA-Z0-9$ -]//g' | \
+        sed 's/-\+/-/g' | \
+        sed 's/ /-/g' | \
+        sed 's/^-\+//g' | \
+        sed 's/-\+$//g')
+    
+    # If we're in a directory other than current, include it in output
+    if [ "$directory" = "." ]; then
+        echo "${date_prefix}_${sanitized}.${extension}"
+    else
+        echo "${directory}/${date_prefix}_${sanitized}.${extension}"
+    fi
+}
+
+# Check if a filename was provided
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 filename"
+    exit 1
+fi
+
+# Process the filename
+sanitized_name=$(sanitize_filename "$1")
+echo "Original: $1"
+echo "Sanitized: $sanitized_name"
+
+# Uncomment the following line to actually rename the file
+mv "$1" "$sanitized_name"

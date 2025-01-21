@@ -1,7 +1,7 @@
 [user]
   name = Kylian Vermeulen
   email = email@kylianvermeulen.com
-  signingKey = 176C69A3FD5DC4D3
+  signingKey = CA54CE8CCEE23FEB
   username = KylianVermeulen
 [github]
   user = KylianVermeulen
@@ -10,7 +10,7 @@
   quotepath = false
   autocrlf = input
   safecrlf = warn
-  editor = vim
+  editor = nvim
 [commit]
   gpgsign = true  
   template = /Users/kylianvermeulen/.stCommitMsg

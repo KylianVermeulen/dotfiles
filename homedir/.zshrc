@@ -71,7 +71,7 @@ ZSH_CUSTOM=$DOTFILES/lib_zsh/
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git jira docker docker-compose macos nvm tmux zsh-autosuggestions)
+plugins=(git docker macos tmux)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -105,3 +105,11 @@ export LANG=en_US.UTF-8
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+export PATH="$PATH:$HOME/.local/bin"
+
+export ANDROID_HOME="/Users/kylianvermeulen/Library/android/sdk"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

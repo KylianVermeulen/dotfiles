@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Check if ffmpeg is installed
+if ! command -v ffmpeg &> /dev/null; then
+    echo "Error: ffmpeg is not installed. Please install it first."
+    exit 1
+fi
+
+# Function to convert a single file
+convert_to_hevc() {
+    input_file="$1"
+    filename="${input_file%.*}"
+    output_file="${filename}_hevc.mp4"
+    
+    # Check if input file exists
+    if [ ! -f "$input_file" ]; then
+        echo "Error: Input file '$input_file' not found."
+        return 1
+    fi
+    
+    echo "Converting: $input_file"
+    echo "Output to: $output_file"
+    
+    ffmpeg -i "$input_file" \
+        -c:v libx265 \
+        -preset medium \
+        -crf 28 \
+        -tag:v hvc1 \
+        -c:a aac \
+        -b:a 128k \
+        -movflags +faststart \
+        "$output_file"
+    
+    if [ $? -eq 0 ]; then
+        echo "Successfully converted $input_file"
+        
+        # Show size comparison
+        original_size=$(du -h "$input_file" | cut -f1)
+        new_size=$(du -h "$output_file" | cut -f1)
+        echo "Original size: $original_size"
+        echo "New size: $new_size"
+    else
+        echo "Error converting $input_file"
+        return 1
+    fi
+}
+
+# Check if any arguments were provided
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 video1.mp4 [video2.mp4 ...]"
+    echo "This script converts videos to H.265/HEVC format for better compression."
+    exit 1
+fi
+
+# Process all input files
+for file in "$@"; do
+    convert_to_hevc "$file"
+    echo "----------------------------------------"
+done
+
+echo "All conversions completed!"

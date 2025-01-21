@@ -24,3 +24,7 @@ alias random="od -d /dev/urandom"
 alias tx=tmuxinator
 alias pub_idrsa='cat ~/.ssh/id_rsa.pub | pbcopy'
 alias sail='./vendor/bin/sail'
+
+alias writingexpert="cat /Users/kylianvermeulen/Downloads/You\ are\ an\ academic\ writing\ expert..md"
+
+alias probe="ffprobe -v quiet -print_format json -show_format -show_streams"

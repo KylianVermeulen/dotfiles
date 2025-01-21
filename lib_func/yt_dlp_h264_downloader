@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Function to check if yt-dlp is installed
+check_yt_dlp() {
+    if ! command -v yt-dlp &> /dev/null; then
+        echo "yt-dlp is not installed. Please install it first."
+        echo "You can install it using: pip install yt-dlp"
+        exit 1
+    fi
+}
+
+# Function to download video
+download_video() {
+    local url="$1"
+    local output_dir="$2"
+
+    if [ ! -d "$output_dir" ]; then
+        mkdir -p "$output_dir"
+    fi
+
+    yt-dlp -f 'bestvideo[ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/best[ext=mp4]/best' \
+           -o "$output_dir/%(title)s.%(ext)s" \
+           "$url"
+}
+
+# Main script
+main() {
+    check_yt_dlp
+
+    read -p "Enter the video URL: " video_url
+    read -p "Enter the output directory (default: current directory): " output_dir
+
+    if [ -z "$output_dir" ]; then
+        output_dir="."
+    fi
+
+    download_video "$video_url" "$output_dir"
+}
+
+# Run the main function
+main

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Set the Downloads directory path
+DOWNLOADS="$HOME/Downloads"
+
+# Create organizing directories if they don't exist
+mkdir -p "$DOWNLOADS"/{Images,Documents,Audio,Video,Archives,Others}
+
+# Function to rename files with date prefix and replace spaces
+rename_file() {
+    local file="$1"
+    local dir="$2"
+    
+    # Get file creation date (using modification date as fallback)
+    local date_added=$(stat -f "%SB" -t "%Y%m%d" "$file" 2>/dev/null || stat -c "%Y" "$file" | date -f - "+%Y%m%d" 2>/dev/null)
+    
+    # Get the base filename
+    local filename=$(basename "$file")
+    
+    # Replace spaces with underscores in the original filename
+    local new_filename="${filename// /_}"
+    
+    # Create the new filename with date prefix
+    local dated_filename="${date_added}_${new_filename}"
+    
+    # Move and rename the file
+    mv "$file" "$dir/$dated_filename"
+}
+
+# Process files by type
+for file in "$DOWNLOADS"/*.{jpg,jpeg,png,gif,bmp,svg,webp}; do
+    [[ -f "$file" ]] && rename_file "$file" "$DOWNLOADS/Images"
+done
+
+for file in "$DOWNLOADS"/*.{pdf,doc,docx,txt,xlsx,xls,ppt,pptx,csv}; do
+    [[ -f "$file" ]] && rename_file "$file" "$DOWNLOADS/Documents"
+done
+
+for file in "$DOWNLOADS"/*.{mp3,wav,m4a,flac,ogg}; do
+    [[ -f "$file" ]] && rename_file "$file" "$DOWNLOADS/Audio"
+done
+
+for file in "$DOWNLOADS"/*.{mp4,mov,avi,mkv,wmv}; do
+    [[ -f "$file" ]] && rename_file "$file" "$DOWNLOADS/Video"
+done
+
+for file in "$DOWNLOADS"/*.{zip,rar,7z,tar,gz}; do
+    [[ -f "$file" ]] && rename_file "$file" "$DOWNLOADS/Archives"
+done
+
+# Handle remaining files
+find "$DOWNLOADS" -maxdepth 1 -type f -not -path "$DOWNLOADS/*/*" | while read file; do
+    rename_file "$file" "$DOWNLOADS/Others"
+done

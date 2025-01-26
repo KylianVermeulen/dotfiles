@@ -1,0 +1,88 @@
+#!/bin/bash
+
+sanitize_filename() {
+    local filepath="$1"
+    
+    # Check if filename already starts with a date prefix (YYYYMMDD_)
+    local filename=$(basename "$filepath")
+    if [[ $filename =~ ^[0-9]{8}_.+ ]]; then
+        # File already has a date prefix, return as is
+        echo "$filepath"
+        return
+    fi
+    
+    # Get file creation date (uses different stat commands based on OS)
+    local date_prefix
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        date_prefix=$(stat -f "%SB" -t "%Y%m%d" "$filepath")
+    else
+        # Linux
+        date_prefix=$(stat -c %w "$filepath" | cut -d' ' -f1 | sed 's/-//g')
+        # If creation date is not available (returns empty), fall back to modification date
+        if [ -z "$date_prefix" ]; then
+            date_prefix=$(stat -c %y "$filepath" | cut -d' ' -f1 | sed 's/-//g')
+        fi
+    fi
+    
+    # Split into directory and filename
+    local directory=$(dirname "$filepath")
+    local filename=$(basename "$filepath")
+    # Extract the file extension
+    local extension="${filename##*.}"
+    local basename="${filename%.*}"
+    
+    # Handle files without extensions
+    if [ "$filename" = "$extension" ]; then
+        extension=""
+        basename="$filename"
+    fi
+    
+    # Remove special characters and replace spaces with hyphens
+    local sanitized=$(echo "$basename" | \
+        sed 's/  */ /g' | \
+        sed 's/[():：]/-/g' | \
+        sed 's/[^a-zA-Z0-9$ -]//g' | \
+        sed 's/-\+/-/g' | \
+        sed 's/ /-/g' | \
+        sed 's/^-\+//g' | \
+        sed 's/-\+$//g')
+    
+    # Construct the new filename
+    if [ -z "$extension" ]; then
+        echo "${directory}/${date_prefix}_${sanitized}"
+    else
+        echo "${directory}/${date_prefix}_${sanitized}.${extension}"
+    fi
+}
+
+# Function to process a single file
+process_file() {
+    local file="$1"
+    # Skip the script itself and hidden files
+    if [ "$file" = "$(basename "$0")" ] || [[ "$file" == .* ]]; then
+        return
+    fi
+    
+    # Process the file
+    local sanitized_name=$(sanitize_filename "$file")
+    
+    # Only show output and rename if the file name would actually change
+    if [ "$file" != "$sanitized_name" ]; then
+        echo "Original: $file"
+        echo "Sanitized: $sanitized_name"
+        mv "$file" "$sanitized_name"
+    fi
+}
+
+# Main script
+echo "Starting batch file renaming..."
+
+# Process all files in current directory
+for file in *; do
+    if [ -f "$file" ]; then
+        process_file "$file"
+    fi
+done
+
+echo "File renaming complete."

@@ -50,7 +50,7 @@
   repo = /Users/kylianvermeulen/Documents/Code/NS/Ns.Atlas.Pipelines
   repo = /Users/kylianvermeulen/Documents/Code/NS/IMKInterfaces
 [includeIf "gitdir:~/Documents/Code/NS/"]
-  path = .gitconfig-ns
+  path = ~/.gitconfig-ns
 [pull]
 	rebase = true
 [push]

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Function to update NVM and Node.js LTS
+update_nvm_lts() {
+    echo "Updating NVM..."
+    # Update NVM itself
+    nvm install 'lts/*' --reinstall-packages-from=current
+    
+    # Get the latest LTS version
+    local latest_lts=$(nvm version-remote 'lts/*')
+    
+    # Install latest LTS version if different from current
+    if [ "$(nvm current)" != "$latest_lts" ]; then
+        echo "Installing Node.js $latest_lts..."
+        nvm install "$latest_lts" --reinstall-packages-from=current
+        nvm alias default "$latest_lts"
+        nvm use "$latest_lts"
+        echo "Successfully updated to Node.js $latest_lts"
+    else
+        echo "Already using the latest LTS version: $latest_lts"
+    fi
+}
+
+# Add this to your .bashrc or .zshrc:
+# alias nvmu='update_nvm_lts'

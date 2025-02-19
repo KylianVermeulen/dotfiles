@@ -28,3 +28,7 @@ alias sail='./vendor/bin/sail'
 alias writingexpert="cat /Users/kylianvermeulen/Downloads/You\ are\ an\ academic\ writing\ expert..md"
 
 alias probe="ffprobe -v quiet -print_format json -show_format -show_streams"
+
+alias swiftlines="find . -name '*.swift' | xargs wc -l | sort -n"
+alias findlines='function _findlines() { find . -name "*.$1" | xargs wc -l | sort -n; }; _findlines'
+

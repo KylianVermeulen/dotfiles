@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# Function to check if required tools are installed
+check_requirements() {
+    # Check for yt-dlp
+    if ! command -v yt-dlp &> /dev/null; then
+        echo "yt-dlp is not installed. Please install it first."
+        echo "You can install it using: pip install yt-dlp"
+        exit 1
+    fi
+    
+    # Check for ffmpeg (required for encoding)
+    if ! command -v ffmpeg &> /dev/null; then
+        echo "ffmpeg is not installed. Please install it first."
+        echo "You can install it using your package manager (apt, brew, etc.)"
+        exit 1
+    fi
+}
+
+# Function to download video
+download_video() {
+    local url="$1"
+    local output_dir="$2"
+    local cookies_file="$3"
+    local quality="$4"
+    local crf="$5"
+    local preset="$6"
+
+    if [ ! -d "$output_dir" ]; then
+        mkdir -p "$output_dir"
+    fi
+
+    # Create a temporary directory for the original downloaded file
+    temp_dir=$(mktemp -d)
+    
+    echo "Downloading video from: $url"
+    
+    # Construct the yt-dlp command for initial download
+    local cmd="yt-dlp -f 'bestvideo[height>=${quality}][ext=webm][vcodec^=vp9]+bestaudio[ext=webm]/bestvideo[height>=${quality}][ext=mp4][vcodec^=hev1]+bestaudio[ext=m4a]/bestvideo[height>=${quality}][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/best[height>=${quality}]/best'"
+    
+    # Add download options
+    cmd+=" --retries infinite"
+    cmd+=" --fragment-retries infinite"
+    
+    # Add cookies if provided
+    if [ -n "$cookies_file" ] && [ -f "$cookies_file" ]; then
+        cmd+=" --cookies '$cookies_file'"
+        echo "Using cookies from: $cookies_file"
+    else
+        echo "No cookies file provided or file not found. Proceeding without cookies."
+    fi
+
+    # Download to temp directory
+    cmd+=" -o '$temp_dir/original.%(ext)s'"
+    cmd+=" '$url'"
+    cmd+=" --print filename"  # Print the filename that yt-dlp creates
+
+    # Execute the download command
+    original_file=$(eval "$cmd")
+    
+    if [ ! -f "$original_file" ]; then
+        echo "Download failed or file not found."
+        rm -rf "$temp_dir"
+        exit 1
+    fi
+    
+    # Get the video title for the output file
+    video_title=$(yt-dlp --get-filename -o "%(title)s" "$url")
+    output_file="$output_dir/${video_title// /_}.mp4"
+    
+    echo "Download complete: $original_file"
+    echo "Converting to H.265 format with CRF $crf and preset $preset"
+    
+    # Re-encode to H.265
+    ffmpeg -i "$original_file" \
+        -c:v libx265 \
+        -crf "$crf" \
+        -preset "$preset" \
+        -c:a aac \
+        -b:a 192k \
+        "$output_file"
+    
+    encoding_status=$?
+    
+    # Clean up temp files
+    rm -rf "$temp_dir"
+    
+    if [ $encoding_status -eq 0 ]; then
+        echo "Conversion successful! Saved to: $output_file"
+    else
+        echo "Conversion failed with status $encoding_status"
+        exit 1
+    fi
+}
+
+# Main script
+main() {
+    check_requirements
+
+    read -p "Enter the video URL: " video_url
+    read -p "Enter the output directory (default: current directory): " output_dir
+    read -p "Enter path to cookies.txt file (optional, press enter to skip): " cookies_file
+    read -p "Enter minimum video quality (height in pixels, default: 1080): " quality
+    read -p "Enter H.265 CRF value (0-51, lower is better quality, default: 23): " crf
+    read -p "Enter encoding preset (ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow, default: medium): " preset
+
+    # Set defaults if not provided
+    if [ -z "$output_dir" ]; then
+        output_dir="."
+    fi
+    
+    if [ -z "$quality" ]; then
+        quality="1080"
+    fi
+    
+    if [ -z "$crf" ]; then
+        crf="23"
+    fi
+    
+    if [ -z "$preset" ]; then
+        preset="medium"
+    fi
+
+    download_video "$video_url" "$output_dir" "$cookies_file" "$quality" "$crf" "$preset"
+}
+
+# Run the main function
+main

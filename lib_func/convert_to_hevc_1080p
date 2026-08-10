@@ -10,7 +10,7 @@ fi
 convert_to_hevc() {
     input_file="$1"
     filename="${input_file%.*}"
-    output_file="${filename}.mp4"
+    output_file="${filename}_hevc.mp4"
     
     # Check if input file exists
     if [ ! -f "$input_file" ]; then
@@ -26,10 +26,19 @@ convert_to_hevc() {
     width=$(echo $resolution | cut -d'x' -f1)
     height=$(echo $resolution | cut -d'x' -f2)
     
+    # Check if resolution exceeds 1080p and set scaling if needed
+    scale_filter=""
+    if [ $height -gt 1080 ]; then
+        scale_filter="-vf scale=-2:1080"
+        echo "Input resolution: ${width}x${height}"
+        echo "Scaling down to 1080p"
+    fi
+    
     ffmpeg -i "$input_file" \
+        $scale_filter \
         -c:v libx265 \
         -preset medium \
-        -crf 28 \
+        -crf 22 \
         -tag:v hvc1 \
         -c:a aac \
         -b:a 128k \
@@ -38,9 +47,8 @@ convert_to_hevc() {
     
     if [ $? -eq 0 ]; then
         echo "Successfully converted $input_file"
-        
+
         touch -r "$input_file" "$output_file"
-        echo "Preserved original timestamp"
         
         # Show size comparison
         original_size=$(du -h "$input_file" | cut -f1)
@@ -61,6 +69,7 @@ convert_to_hevc() {
 if [ $# -eq 0 ]; then
     echo "Usage: $0 video1.mp4 [video2.mp4 ...]"
     echo "This script converts videos to H.265/HEVC format for better compression."
+    echo "Videos larger than 1080p will be automatically scaled down."
     exit 1
 fi
 

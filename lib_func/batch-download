@@ -1,0 +1,215 @@
+#!/bin/bash
+
+# Function to check if yt-dlp is installed
+check_yt_dlp() {
+    if ! command -v yt-dlp &> /dev/null; then
+        echo "yt-dlp is not installed. Please install it first."
+        echo "You can install it using: pip install yt-dlp"
+        exit 1
+    fi
+}
+
+# Function to download video
+download_video() {
+    local url="$1"
+    local output_dir="$2"
+    local cookies_file="$3"
+
+    if [ ! -d "$output_dir" ]; then
+        mkdir -p "$output_dir"
+    fi
+
+    # Construct the yt-dlp command
+    local cmd="yt-dlp -f 'bestvideo[height>=1080][ext=webm][vcodec^=vp9]+bestaudio[ext=webm]/bestvideo[height>=1080][ext=mp4][vcodec^=hev1]+bestaudio[ext=m4a]/bestvideo[height>=1080][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/best[height>=1080]/best'"
+
+    # Add download options
+    cmd+=" --retries infinite"
+    cmd+=" --fragment-retries infinite"
+    cmd+=" --verbose"
+
+    # Add cookies if provided
+    if [ -n "$cookies_file" ] && [ -f "$cookies_file" ]; then
+        cmd+=" --cookies '$cookies_file'"
+        echo "Using cookies from: $cookies_file"
+    else
+        echo "No cookies file provided or file not found. Proceeding without cookies."
+    fi
+
+    cmd+=" -o '$output_dir/%(title)s.%(ext)s'"
+    cmd+=" '$url'"
+
+    # Execute the command
+    echo "Downloading: $url"
+    eval "$cmd"
+    echo "Finished downloading: $url"
+    echo "------------------------"
+}
+
+# Function to process URL file
+process_url_file() {
+    local url_file="$1"
+    local output_dir="$2"
+    local cookies_file="$3"
+    
+    if [ ! -f "$url_file" ]; then
+        echo "URL file not found: $url_file"
+        exit 1
+    fi
+    
+    echo "Starting batch download from file: $url_file"
+    echo "------------------------"
+    
+    # Read URLs from file and download each one
+    while IFS= read -r url || [[ -n "$url" ]]; do
+        # Skip empty lines and comments
+        if [[ -z "$url" || "$url" == \#* ]]; then
+            continue
+        fi
+        download_video "$url" "$output_dir" "$cookies_file"
+    done < "$url_file"
+    
+    echo "Batch download completed!"
+}
+
+# Function to handle interactive batch input
+process_interactive_batch() {
+    local output_dir="$1"
+    local cookies_file="$2"
+    
+    echo "Enter video URLs (one per line)."
+    echo "When done, press Ctrl+D (or Ctrl+Z in Windows) on a new line."
+    echo "------------------------"
+    
+    urls=()
+    while IFS= read -r url; do
+        urls+=("$url")
+    done
+    
+    echo "Starting batch download of ${#urls[@]} URLs..."
+    echo "------------------------"
+    
+    for url in "${urls[@]}"; do
+        download_video "$url" "$output_dir" "$cookies_file"
+    done
+    
+    echo "Batch download completed!"
+}
+
+# Function to display help
+show_help() {
+    echo "Batch Download Script for yt-dlp"
+    echo ""
+    echo "Usage: $0 [options]"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help                 Show this help message"
+    echo "  -f, --file <url_file>      File containing URLs (one per line)"
+    echo "  -o, --output <directory>   Output directory (default: current directory)"
+    echo "  -c, --cookies <file>       Path to cookies.txt file"
+    echo "  -i, --interactive          Interactive mode for entering multiple URLs"
+    echo ""
+    echo "Examples:"
+    echo "  $0 --file urls.txt --output Videos --cookies cookies.txt"
+    echo "  $0 --interactive --output Downloads"
+    echo ""
+}
+
+# Main script
+main() {
+    check_yt_dlp
+    
+    # Default values
+    url_file=""
+    output_dir="."
+    cookies_file=""
+    interactive=false
+    
+    # If no arguments provided, use interactive single URL mode
+    if [ $# -eq 0 ]; then
+        read -p "Choose mode (1: Single URL, 2: Multiple URLs from file, 3: Interactive batch): " mode
+        case $mode in
+            1)
+                read -p "Enter the video URL: " video_url
+                read -p "Enter the output directory (default: current directory): " output_dir
+                read -p "Enter path to cookies.txt file (optional, press enter to skip): " cookies_file
+                
+                if [ -z "$output_dir" ]; then
+                    output_dir="."
+                fi
+                
+                download_video "$video_url" "$output_dir" "$cookies_file"
+                ;;
+            2)
+                read -p "Enter the file containing URLs (one per line): " url_file
+                read -p "Enter the output directory (default: current directory): " output_dir
+                read -p "Enter path to cookies.txt file (optional, press enter to skip): " cookies_file
+                
+                if [ -z "$output_dir" ]; then
+                    output_dir="."
+                fi
+                
+                process_url_file "$url_file" "$output_dir" "$cookies_file"
+                ;;
+            3)
+                read -p "Enter the output directory (default: current directory): " output_dir
+                read -p "Enter path to cookies.txt file (optional, press enter to skip): " cookies_file
+                
+                if [ -z "$output_dir" ]; then
+                    output_dir="."
+                fi
+                
+                process_interactive_batch "$output_dir" "$cookies_file"
+                ;;
+            *)
+                echo "Invalid mode selected. Exiting."
+                exit 1
+                ;;
+        esac
+        exit 0
+    fi
+    
+    # Parse command line arguments
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -f|--file)
+                url_file="$2"
+                shift 2
+                ;;
+            -o|--output)
+                output_dir="$2"
+                shift 2
+                ;;
+            -c|--cookies)
+                cookies_file="$2"
+                shift 2
+                ;;
+            -i|--interactive)
+                interactive=true
+                shift
+                ;;
+            *)
+                echo "Unknown option: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
+    # Execute based on provided arguments
+    if [ "$interactive" = true ]; then
+        process_interactive_batch "$output_dir" "$cookies_file"
+    elif [ -n "$url_file" ]; then
+        process_url_file "$url_file" "$output_dir" "$cookies_file"
+    else
+        echo "Error: No URLs provided. Use --file or --interactive mode."
+        show_help
+        exit 1
+    fi
+}
+
+# Run the main function
+main "$@"

@@ -1,0 +1,155 @@
+#!/bin/bash
+
+# Enable proper handling of filenames with spaces and special characters
+IFS=$'\n'
+set -f
+
+# Check if ffmpeg is installed
+if ! command -v ffmpeg &> /dev/null; then
+    echo "Error: ffmpeg is not installed. Please install it first."
+    exit 1
+fi
+
+# Function to convert a single file
+convert_to_hevc() {
+    input_file="$1"
+    # Extract directory and filename properly to handle Unicode
+    input_dir=$(dirname "$input_file")
+    base_name=$(basename "$input_file")
+    filename="${input_dir}/${base_name%.*}"
+    output_file="${filename}_hevc.mp4"
+    
+    # Check if input file exists
+    if [ ! -f "$input_file" ]; then
+        echo "Error: Input file '$input_file' not found."
+        return 1
+    fi
+    
+    # Skip if it's already an HEVC converted file
+    if [[ "$input_file" == *"_hevc.mp4" ]]; then
+        echo "Skipping already converted file: $input_file"
+        return 0
+    fi
+    
+    echo "Converting: $input_file"
+    echo "Output to: $output_file"
+    
+    # Get video resolution - use proper quoting for Unicode filenames
+    resolution=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$input_file" 2>/dev/null)
+    width=$(echo $resolution | cut -d'x' -f1)
+    height=$(echo $resolution | cut -d'x' -f2)
+    
+    # Check if resolution exceeds 1080p and set scaling if needed
+    ffmpeg_command=("ffmpeg" "-i" "$input_file")
+    
+    if [ $height -gt 1080 ]; then
+        echo "Input resolution: ${width}x${height}"
+        echo "Scaling down to 1080p"
+        ffmpeg_command+=("-vf" "scale=-2:1080")
+    fi
+    
+    # Add the rest of the ffmpeg parameters
+    ffmpeg_command+=(
+        "-c:v" "libx265"
+        "-preset" "slow"
+        "-crf" "22"
+        "-tag:v" "hvc1"
+        "-c:a" "aac"
+        "-b:a" "128k"
+        "-movflags" "+faststart"
+        "$output_file"
+    )
+    
+    # Run the ffmpeg command
+    "${ffmpeg_command[@]}"
+    
+    if [ $? -eq 0 ]; then
+        echo "Successfully converted $input_file"
+        
+        # Show size comparison
+        original_size=$(du -h "$input_file" | cut -f1)
+        new_size=$(du -h "$output_file" | cut -f1)
+        echo "Original size: $original_size"
+        echo "New size: $new_size"
+        
+        # Show final resolution
+        final_resolution=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$output_file")
+        echo "Final resolution: $final_resolution"
+    else
+        echo "Error converting $input_file"
+        return 1
+    fi
+}
+
+# Default directory is current directory
+target_dir="."
+video_extensions=("mp4" "mov" "mkv" "avi" "wmv" "flv" "webm" "m4v")
+converted_count=0
+skipped_count=0
+error_count=0
+
+# Process command line arguments
+while getopts ":d:h" opt; do
+  case ${opt} in
+    d )
+      target_dir="$OPTARG"
+      ;;
+    h )
+      echo "Usage: $0 [-d directory]"
+      echo "  -d  Specify target directory (default: current directory)"
+      echo "  -h  Show this help message"
+      echo ""
+      echo "This script converts all videos in a directory to H.265/HEVC format."
+      echo "Videos larger than 1080p will be automatically scaled down."
+      exit 0
+      ;;
+    \? )
+      echo "Invalid option: $OPTARG" 1>&2
+      echo "Use -h for help"
+      exit 1
+      ;;
+    : )
+      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      echo "Use -h for help"
+      exit 1
+      ;;
+  esac
+done
+
+# Check if directory exists
+if [ ! -d "$target_dir" ]; then
+    echo "Error: Directory '$target_dir' not found."
+    exit 1
+fi
+
+echo "Processing all videos in: $target_dir"
+echo "----------------------------------------"
+
+# Find all video files in the directory
+found_videos=false
+
+for ext in "${video_extensions[@]}"; do
+    # Use find with -exec to process each file directly
+    find "$target_dir" -maxdepth 1 -type f -name "*.${ext}" -print0 2>/dev/null | 
+    while IFS= read -r -d $'\0' file; do
+        found_videos=true
+        
+        # Process the file
+        if convert_to_hevc "$file"; then
+            ((converted_count++))
+        else
+            ((error_count++))
+        fi
+        echo "----------------------------------------"
+    done
+done
+
+if [ "$found_videos" = false ]; then
+    echo "No video files found in $target_dir"
+    exit 0
+fi
+
+echo "Conversion summary:"
+echo "  Converted: $converted_count"
+echo "  Errors: $error_count"
+echo "All conversions completed!"

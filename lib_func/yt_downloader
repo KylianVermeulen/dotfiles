@@ -21,14 +21,16 @@ download_video() {
 
     # Construct the yt-dlp command
     local cmd="yt-dlp -f 'bestvideo[height>=1080][ext=webm][vcodec^=vp9]+bestaudio[ext=webm]/bestvideo[height>=1080][ext=mp4][vcodec^=hev1]+bestaudio[ext=m4a]/bestvideo[height>=1080][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/best[height>=1080]/best'"
-    
+    #local cmd="yt-dlp -f 'bestvideo[height>=1080]+bestaudio/best[height>=1080]'"
+
     # Add download options
     #cmd+=" --throttled-rate 100K"
     cmd+=" --retries infinite"
     cmd+=" --fragment-retries infinite"
     #cmd+=" --buffer-size 16K"
     #cmd+=" --limit-rate 5M"
-    
+    cmd+=" --verbose"
+
     # Add cookies if provided
     if [ -n "$cookies_file" ] && [ -f "$cookies_file" ]; then
         cmd+=" --cookies '$cookies_file'"

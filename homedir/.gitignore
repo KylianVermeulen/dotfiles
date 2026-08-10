@@ -46,3 +46,14 @@ Thumbs.db
 # Kylian #
 logback-kylian.xml
 application-kylian.yml
+node/
+node_modules/
+InzetCommandRunner.java
+StartLocatieSharingCommandRunner.java
+CLAUDE.md
+
+
+**/.claude/settings.local.json
+**/.worktrees/
+**/.claude/worktrees
+

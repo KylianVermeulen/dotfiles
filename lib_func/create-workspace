@@ -1,0 +1,17 @@
+#!/bin/bash
+# create-workspace.sh - Create a temporary multi-project workspace
+
+WORKSPACE_DIR="${1:-$(mktemp -d)}"
+shift
+PROJECTS=("$@")
+
+mkdir -p "$WORKSPACE_DIR"
+
+for project in "${PROJECTS[@]}"; do
+    project_name=$(basename "$project")
+    ln -sfn "$(realpath "$project")" "$WORKSPACE_DIR/$project_name"
+done
+
+echo "Workspace created at: $WORKSPACE_DIR"
+echo "Run: cd $WORKSPACE_DIR && claude"
+

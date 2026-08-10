@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Initialize total duration in seconds
+total_seconds=0
+
+# Find all webm files in the current directory
+for video in *.webm; do
+  # Skip if no webm files found
+  [ -f "$video" ] || { echo "No webm files found"; exit 1; }
+  
+  # Get duration in seconds using ffprobe (part of ffmpeg)
+  duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$video")
+  
+  # Add to total (use bc for floating point math)
+  total_seconds=$(echo "$total_seconds + $duration" | bc)
+  
+  # Print individual file duration
+  echo "$video: $(echo "$duration" | bc) seconds"
+done
+
+# Convert total seconds to hours, minutes, seconds format
+hours=$(echo "$total_seconds/3600" | bc)
+minutes=$(echo "($total_seconds%3600)/60" | bc)
+seconds=$(echo "$total_seconds%60" | bc)
+
+# Print the total duration
+echo "----------------------------------------"
+echo "Total duration: ${hours}h ${minutes}m ${seconds}s (${total_seconds} seconds)"

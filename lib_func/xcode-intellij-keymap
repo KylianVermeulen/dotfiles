@@ -1,0 +1,254 @@
+#!/usr/bin/env python3
+import argparse
+import plistlib
+import subprocess
+import sys
+from pathlib import Path
+
+DEFAULT_OUTPUT = Path.home() / "Library/Developer/Xcode/UserData/KeyBindings/IntelliJ.idekeybindings"
+
+MAIN = "Xcode.IDEKit.MenuDefinition.Main"
+SOURCE_EDITOR = "Xcode.IDEPegasusSourceEditor.MenuDefinition.Editor"
+ROOTS = {MAIN: "{} Menu", SOURCE_EDITOR: "Editor Menu for Source Code"}
+
+F = {n: chr(0xF703 + n) for n in range(1, 13)}
+UP, DOWN = "", ""
+BACKSPACE = "\x7f"
+
+INTELLIJ = [
+    ("Go to Declaration", "Xcode.IDEKit.CmdDefinition.JumpToDefinition", "@b"),
+    ("Find Usages", "Xcode.IDEKit.CmdDefinition.FindSelectedSymbolInWorkspace", "~" + F[7]),
+    ("Call Hierarchy", "Xcode.IDEKit.CmdDefinition.CallHierarchy", "^~h"),
+    ("Back", "Xcode.IDEKit.CmdDefinition.GoBack", "@["),
+    ("Forward", "Xcode.IDEKit.CmdDefinition.GoForward", "@]"),
+    ("Recent Files", "Xcode.IDEKit.CmdDefinition.ShowRelatedItemsMenu", "@e"),
+    ("File Structure", "Xcode.IDEKit.CmdDefinition.ShowDocumentItemsMenu", "@" + F[12]),
+    ("Select in Project View", "Xcode.IDEKit.CmdDefinition.RevealInProjectNavigator", "~" + F[1]),
+    ("Quick Documentation", "Xcode.IDEKit.CmdDefinition.IDEQuickHelp", F[1]),
+    ("Next Highlighted Error", "Xcode.IDEKit.CmdDefinition.JumpToNextIssue", F[2]),
+    ("Previous Highlighted Error", "Xcode.IDEKit.CmdDefinition.JumpToPreviousIssue", "$" + F[2]),
+    ("Hide All Tool Windows", "Xcode.IDEKit.CmdDefinition.ToggleFocusEditor", "@$" + F[12]),
+    ("Replace", "Xcode.IDEKit.CmdDefinition.FindAndReplace", "@r"),
+    ("Replace in Files", "Xcode.IDEKit.CmdDefinition.FindAndReplaceInWorkspace", "@$r"),
+    ("Add Selection for Next Occurrence", "Xcode.IDEKit.CmdDefinition.SelectNextOccurrence", "^g"),
+    ("Rename", "Xcode.IDEPegasusSourceEditor.CmdDefinition.Refactor.Rename", "$" + F[6]),
+    ("Extract Method", "Xcode.IDEPegasusSourceEditor.CmdDefinition.Refactor.ExtractMethod", "~@m"),
+    ("Introduce Variable", "Xcode.IDEPegasusSourceEditor.CmdDefinition.Refactor.ExtractExpression", "~@v"),
+    ("Reformat Code", "Xcode.IDEPegasusSourceEditor.CmdDefinition.FormatFile", "~@l"),
+    ("Auto-Indent Lines", "Xcode.IDEPegasusSourceEditor.CmdDefinition.ReIndent", "^~i"),
+    ("Move Line Up", "Xcode.IDEPegasusSourceEditor.CmdDefinition.MoveLineUp", "~$" + UP),
+    ("Move Line Down", "Xcode.IDEPegasusSourceEditor.CmdDefinition.MoveLineDown", "~$" + DOWN),
+    ("Collapse", "Xcode.IDEPegasusSourceEditor.CmdDefinition.Fold", "@-"),
+    ("Expand", "Xcode.IDEPegasusSourceEditor.CmdDefinition.Unfold", "@="),
+    ("Run", "Xcode.IDEKit.CmdDefinition.Run", "^r"),
+    ("Run...", "Xcode.IDEKit.CmdDefinition.EditAndRun", "^~r"),
+    ("Run Context Configuration", "Xcode.IDEKit.CmdDefinition.TestSelectedItems", "^$r"),
+    ("Stop", "Xcode.IDEKit.CmdDefinition.Stop", "@" + F[2]),
+    ("Build Project", "Xcode.IDEKit.CmdDefinition.Build", "@" + F[9]),
+    ("Toggle Line Breakpoint", "Xcode.IDEKit.CmdDefinition.ToggleBreakpointAtCurrentLine", "@" + F[8]),
+    ("Step Over", "Xcode.IDEKit.CmdDefinition.StepOver", F[8]),
+    ("Step Into", "Xcode.IDEKit.CmdDefinition.StepInto", F[7]),
+    ("Step Out", "Xcode.IDEKit.CmdDefinition.StepOut", "$" + F[8]),
+    ("Resume Program", "Xcode.IDEKit.CmdDefinition.PauseContinue", "~@r"),
+]
+
+RELOCATED = [
+    ("Shift Left", "Xcode.IDEPegasusSourceEditor.CmdDefinition.ShiftLeft", "~@$["),
+    ("Shift Right", "Xcode.IDEPegasusSourceEditor.CmdDefinition.ShiftRight", "~@$]"),
+    ("Decrease Font Size", "Xcode.IDEPegasusSourceEditor.CmdDefinition.DecreaseFontSize", "^@-"),
+    ("Increase Font Size", "Xcode.IDEPegasusSourceEditor.CmdDefinition.IncreaseFontSize", "^@="),
+]
+
+TEXT_BINDINGS = {"@" + BACKSPACE: "deleteLine:"}
+
+
+def xcode_contents() -> Path:
+    developer_dir = subprocess.run(["xcode-select", "-p"], capture_output=True, text=True, check=True).stdout.strip()
+    return Path(developer_dir).parent
+
+
+def walk(node):
+    if isinstance(node, dict):
+        yield node
+        for value in node.values():
+            yield from walk(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from walk(value)
+
+
+def load_menu_definitions(contents: Path) -> tuple[dict, dict]:
+    commands, menus = {}, {}
+    for plugin_data in contents.rglob("*.xcplugindata"):
+        try:
+            data = plistlib.load(open(plugin_data, "rb"))
+        except Exception:
+            continue
+        for node in walk(data):
+            point = node.get("point")
+            if point == "Xcode.IDEKit.CmdDefinition" and "id" in node:
+                menu_item = node.get("menuItem")
+                item = (menu_item[0] if menu_item else {}) if isinstance(menu_item, list) else (menu_item or {})
+                commands[node["id"]] = {
+                    "title": node.get("title") or node.get("name"),
+                    "action": node.get("action"),
+                    "key": item.get("keyEquivalent"),
+                    "shift": item.get("useShiftKey"),
+                    "ctrl": item.get("useControlKey"),
+                    "opt": item.get("useOptionKey"),
+                    "cmd": item.get("useCommandKey"),
+                }
+            elif point == "Xcode.IDEKit.MenuDefinition" and "id" in node:
+                items = [i for i in node.get("menuItem") or [] if isinstance(i, dict)]
+                menus[node["id"]] = {
+                    "title": node.get("title"),
+                    "children": [i.get("commandIdentifier") or i.get("menuIdentifier") or i.get("submenuIdentifier") for i in items],
+                }
+    return commands, menus
+
+
+def parse_key(raw: str | None) -> str | None:
+    if raw is None:
+        return None
+    if raw.lower().startswith("0x"):
+        return chr(int(raw, 16))
+    return raw
+
+
+def normalize(shortcut: str) -> str:
+    modifiers = {c for c in shortcut[:-1] if c in "^~@$"}
+    key = shortcut[-1]
+    shifted = {"+": "=", "{": "[", "}": "]", '"': "'", "?": "/", ">": ".", "<": ","}
+    if key in shifted:
+        modifiers.add("$")
+        key = shifted[key]
+    if key.isalpha() and key.isupper():
+        modifiers.add("$")
+        key = key.lower()
+    return "".join(m for m in "^~@$" if m in modifiers) + key
+
+
+def default_shortcut(command: dict) -> str | None:
+    key = parse_key(command["key"])
+    if not key:
+        return None
+    modifiers = ""
+    if command["ctrl"] == "true":
+        modifiers += "^"
+    if command["opt"] == "true":
+        modifiers += "~"
+    if command["cmd"] != "false":
+        modifiers += "@"
+    if command["shift"] == "true":
+        modifiers += "$"
+    return normalize(modifiers + key)
+
+
+class Keymap:
+    def __init__(self, commands: dict, menus: dict):
+        self.commands = commands
+        self.menus = menus
+        self.parents: dict[str, list[str]] = {}
+        for menu_id, menu in menus.items():
+            for child in menu["children"]:
+                if child:
+                    self.parents.setdefault(child, []).append(menu_id)
+
+    def menu_path(self, command_id: str) -> list[str] | None:
+        def climb(node: str, seen: set[str]) -> list[str] | None:
+            for parent in self.parents.get(node, []):
+                if parent in ROOTS:
+                    return [parent]
+                if parent in seen:
+                    continue
+                path = climb(parent, seen | {parent})
+                if path:
+                    return path + [parent]
+            return None
+
+        path = climb(command_id, set())
+        return path
+
+    def scope(self, command_id: str) -> str | None:
+        path = self.menu_path(command_id)
+        return path[0] if path else None
+
+    def entry(self, command_id: str, shortcut: str | None) -> dict:
+        command = self.commands[command_id]
+        path = self.menu_path(command_id)
+        if path is None:
+            raise SystemExit(f"error: Xcode has no menu path for {command_id}")
+        root, parent = path[0], path[-1]
+        group = ROOTS[root].format(self.menus[path[1]]["title"]) if root == MAIN else ROOTS[root]
+        result = {
+            "Action": command["action"],
+            "Alternate": "NO",
+            "CommandID": command_id,
+            "Group": group,
+            "GroupID": root,
+            "GroupedAlternate": "NO",
+            "Navigation": "NO",
+            "Parent Title": self.menus[parent]["title"],
+            "Title": command["title"],
+        }
+        if shortcut:
+            result["Keyboard Shortcut"] = shortcut
+        return result
+
+    def build(self) -> tuple[dict, list[tuple[str, str, str]]]:
+        assignments = {command_id: normalize(key) for _, command_id, key in INTELLIJ + RELOCATED}
+        missing = [command_id for command_id in assignments if command_id not in self.commands]
+        if missing:
+            raise SystemExit("error: this Xcode version does not have " + ", ".join(missing))
+
+        used: dict[tuple[str | None, str], str] = {}
+        for command_id, key in assignments.items():
+            bucket = (self.scope(command_id), key)
+            if bucket in used:
+                raise SystemExit(f"error: {command_id} and {used[bucket]} both use {key!r}")
+            used[bucket] = command_id
+
+        displaced = []
+        for command_id, command in self.commands.items():
+            key = default_shortcut(command)
+            if command_id in assignments or not key:
+                continue
+            command_scope = self.scope(command_id)
+            for (assigned_scope, assigned_key), assigned_id in used.items():
+                if key == assigned_key and command_scope is not None and {command_scope, assigned_scope} <= set(ROOTS):
+                    displaced.append((command_id, key, assigned_id))
+
+        bindings = [self.entry(command_id, key) for command_id, key in assignments.items()]
+        bindings += [self.entry(command_id, None) for command_id, _, _ in displaced]
+        document = {
+            "Menu Key Bindings": {"Version": 3, "Key Bindings": bindings},
+            "Text Key Bindings": {"Version": 3, "Key Bindings": TEXT_BINDINGS},
+        }
+        return document, displaced
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Generate an Xcode key binding set that follows the IntelliJ IDEA macOS keymap.")
+    parser.add_argument("output", nargs="?", type=Path, default=DEFAULT_OUTPUT, help=f"output file (default: {DEFAULT_OUTPUT})")
+    parser.add_argument("--force", action="store_true", help="overwrite an existing output file")
+    arguments = parser.parse_args()
+
+    if arguments.output.exists() and not arguments.force:
+        print(f"error: {arguments.output} exists. Pass --force to overwrite it.", file=sys.stderr)
+        return 1
+
+    contents = xcode_contents()
+    keymap = Keymap(*load_menu_definitions(contents))
+    document, displaced = keymap.build()
+    arguments.output.parent.mkdir(parents=True, exist_ok=True)
+    plistlib.dump(document, open(arguments.output, "wb"), fmt=plistlib.FMT_XML)
+
+    print(f"Wrote {arguments.output} from {contents.parent}.")
+    for command_id, key, replacement in displaced:
+        print(f"Removed the default shortcut {key!r} of '{keymap.commands[command_id]['title']}'; it now runs '{keymap.commands[replacement]['title']}'.")
+    print("Select the set in Xcode > Settings > Key Bindings.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

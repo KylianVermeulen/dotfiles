@@ -1,0 +1,46 @@
+{
+    "security.workspace.trust.untrustedFiles": "open",
+    "cursor.aipreview.enabled": true,
+    "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
+    "lldb.launch.expressions": "native",
+    "editor.fontSize": 13,
+    "explorer.confirmDelete": false,
+    "[swift]": {
+        "editor.defaultFormatter": "swiftlang.swift-vscode"
+    },
+    "explorer.confirmDragAndDrop": false,
+    "cursor.composer.shouldChimeAfterChatFinishes": true,
+    "cursor.cpp.enablePartialAccepts": true,
+    "[dockercompose]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "editor.defaultFormatter": "sweetpad.sweetpad",
+    "cursor.general.fontSmoothingAntialiased": true,
+    "window.autoDetectColorScheme": true,
+    "editor.accessibilitySupport": "off",
+    "sweetpad.buildServer.provider": "xcode-build-server",
+    "workbench.colorTheme": "Cursor Light",
+    "workbench.preferredDarkColorTheme": "One Dark Pro",
+    "workbench.editor.enablePreview": true,
+    "workbench.editor.revealIfOpen": false,
+    "files.autoSave": "onFocusChange",
+    "editor.fontFamily": "JetBrains Mono",
+    "editor.fontLigatures": true,
+    "editor.inlayHints.enabled": "on",
+    "editor.stickyScroll.enabled": true,
+    "editor.rulers": [160],
+    "workbench.tree.indent": 16,
+    "search.exclude": {
+        "**/Derived": true,
+        "**/Tuist/.build": true,
+        "**/build": true
+    },
+    "terminal.integrated.fontFamily": "monospace",
+    "cursor.composer.editorConversationDensity": "detailed"
+}

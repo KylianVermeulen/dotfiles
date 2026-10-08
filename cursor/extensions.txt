@@ -1,0 +1,9 @@
+anthropic.claude-code
+anysphere.remote-containers
+anysphere.remote-ssh
+k--kato.intellij-idea-keybindings
+llvm-vs-code-extensions.lldb-dap
+sweetpad.sweetpad
+swiftlang.swift-vscode
+vadimcn.vscode-lldb
+zhuangtongfa.material-theme

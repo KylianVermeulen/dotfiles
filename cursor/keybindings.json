@@ -1,0 +1,33 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+        "key": "cmd+i",
+        "command": "composerMode.agent"
+    },
+    {
+        "key": "cmd+k",
+        "command": "git.commitAll",
+        "when": "!inDebugMode && !terminalFocus"
+    },
+    {
+        "key": "cmd+l",
+        "command": "workbench.action.gotoLine"
+    },
+    {
+        "key": "ctrl+r",
+        "command": "sweetpad.build.launch",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "cmd+f9",
+        "command": "sweetpad.build.build"
+    },
+    {
+        "key": "cmd+f2",
+        "command": "sweetpad.build.stop"
+    },
+    {
+        "key": "ctrl+shift+r",
+        "command": "sweetpad.build.test"
+    }
+]
